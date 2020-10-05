@@ -14,14 +14,22 @@ response_dict = r.json()
 print(f"Total repositories: {response_dict['total_count']}")
 
 # Explore information about the repositories.
-repo_dict = response_dict['items']
-print(f"Repositories returned: {len(repo_dict)}")
+repo_dicts = response_dict['items']
+print(f"Repositories returned: {len(repo_dicts)}")
 
 # Examine the first repo
-repo_dict = repo_dict[0]
-print(f"\nKeys: {len(repo_dict)}")
-for key in sorted(repo_dict.keys()):
-	print(key)
+repo_dict = repo_dicts[0]
 
-# Process results.
-print(response_dict.keys())
+# Code used to examine all keys in dictonary
+# print(f"\nKeys: {len(repo_dict)}")
+#for key in sorted(repo_dict.keys()):
+	#print(key)
+
+print(f"\nSelected information about first repository:")
+print(f"Name: {repo_dict['name']}")
+print(f"Owner: {repo_dict['owner']['login']}")
+print(f"Stars: {repo_dict['stargazers_count']}")
+print(f"Repository: {repo_dict['html_url']}")
+print(f"Created: {repo_dict['created_at']}")
+print(f"Updated: {repo_dict['updated_at']}")
+print(f"Decription: {repo_dict['description']}")
