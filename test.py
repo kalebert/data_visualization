@@ -1,66 +1,20 @@
-import csv 
-from datetime import datetime
+from operator import itemgetter
 
-from matplotlib import pyplot as plt
+import requests
 
+# Make an API call and store the response.
+url = 'https://hacker-news.firebaseio.com/v0/topstories.json'
+r = requests.get(url)
+print(f"Status code: {r.status_code}")
 
-def get_weather_data(filename, dates, highs, lows):
-    
-    """Get the highs and lows from a data file."""
+# Process information about each submission. 
+submission_ids = r.json() 
+submission_dicts = []
+for submission_id in submission_ids[:30]:
+	# Make a separate API call for each submission.
+	url = f"https://hacker-news.firebaseio.com/v0/item/{submission_id}.json"
+	r = requests.get(url)
+	print(f"id: {submission_id}\tstatus: {r.status_code}") 
+	response_dict = r.json()
 
-    with open(filename) as f:
-        reader = csv.reader(f)
-        header_row = next(reader)
-
-        date_index = header_row.index('DATE')
-        high_index = header_row.index('TMAX')
-        low_index = header_row.index('TMIN')
-        name_index = header_row.index('NAME')
-
-        # Get dats, highs and lows from this file.
-        for row in reader:
-            current_date = datetime.strptime(row[date_index], '%Y-%m-%d')
-            try:
-                high = int(row[high_index])
-                low = int(row[low_index])
-            except ValueError:
-                print(f"Missing data for {current_date}")
-            else:
-                dates.append(current_date)
-                highs.append(high)
-                lows.append(low)
-
-# Get weather data for Sitka.
-filename = 'data/sitka_weather_2018_simple.csv'
-dates, highs, lows = [], [], []
-get_weather_data(filename, dates, highs, lows)
-
-# Plot Sitka weather data.
-plt.style.use('seaborn')
-fig, ax = plt.subplots()
-ax.plot(dates, highs, c='red', alpha=0.6)
-ax.plot(dates, lows, c='blue', alpha=0.6)
-plt.fill_between(dates, highs, lows, facecolor='blue', alpha=0.15)
-
-# Get weather data for Death Vally.
-filename = 'data/death_valley_2018_simple.csv'
-dates, highs, lows = [], [], []
-get_weather_data(filename, dates, highs, lows)
-
-# Plot Death Vally weather data.
-ax.plot(dates, highs, c='red', alpha=0.3)
-ax.plot(dates, lows, c='blue', alpha=0.3)
-plt.fill_between(dates, highs, lows, facecolor='blue', alpha=0.50)
-
-
-# Format plot.
-title = "Daily high and low temperatures - 2018"
-title += "\nSitka, AK and Death Valley, CA"
-plt.title(title, fontsize=24)
-plt.xlabel('', fontsize=16)
-fig.autofmt_xdate()
-plt.ylabel("Temperature (F)", fontsize=16)
-plt.tick_params(axis='both', which='major', labelsize=16)
-plt.ylim(10, 130)
-
-plt.show()
+print(response_dict)
